@@ -18,7 +18,10 @@ export const buildTestResult = (result) => {
     }
   }
   if (missingKeys.length) {
-    throw new Error(`Invalid Test: missing values ${missingKeys.join(',')}`);
+    throw {
+      message: `Invalid Test: missing values ${missingKeys.join(',')} - test_id:${result.test_id}, student_id:${result.student_number}`,
+      type: 'Invalid Payload',
+    };
   }
 
   // Coerce some types and calculate the object to be inserted to the DB
@@ -51,4 +54,8 @@ export const buildTestResult = (result) => {
   }
 
   return testResult;
+};
+
+export const isEntryHigherQuality = (oldEntry, newEntry) => {
+  return (newEntry.marks_available > oldEntry.marks_available || newEntry.marks_obtained > oldEntry.marks_obtained);
 };

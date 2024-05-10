@@ -66,6 +66,20 @@ Returns a JSON object containing a `errors` array and `success` array. Errors ar
 
 
 ## Assumptions
+There's a whole world of questions around if this will receive 1 test at a time, or an array of tests. Because the sample.xml file contains multiple I'm going with that - i.e. It must accept 1 or more tests at once into the import endpoint.
+
+However, the following requirement is really great
+
+> Sometimes, the machines mess up and post you a document missing some important bits. When this happens, it's important that you reject the _entire_ document with an appropriate HTTP error. This causes the machine to print out the offending document (yes, print, as in, on paper) and some poor work experience kid then enters the whole thing manually. If you've already accepted part of the document, that'll cause some confusion which is _way_ above their paygrade.
+
+What's a "_Document_" is that one test, is that a whole series of tests. What is "_Sometimes_", "_appropriate HTTP error_", "_important bits_"!
+
+Because it says HTTP error i'm assuming it's _everything_, so the whole array of tests that got passed in that request cannot bit commited to the DB. And I'm assuming important bits are everything, so I've made the DB not like NULL values anywhere. Even though I'm not using the `<answer>` values, I'm still expecting some of them too.
+
+Although how it'll manage to print the specific document that failed if it's a batch of multiple I've no idea, I'm sending back a 500 with the Test and Student Number and praying for the work experience kid (and that it's not the Test or Student Number that's missing).
+
+### Other less dramatic assumptions
+
 When the lights go out the postgres database contents are maintained. I'm not quite sure if AWS deletes the file storage volumes if you don't pay you bills, I assume they just stop the running instances... but at some point surely they kill the whole account. If that happened all the test data would be lost, that would be bad.
 
 The postgres library is handling SQL injection issues for me. It says so, I trust it, but I didn't explicitly test it. If it doesn't there's a whole lot of validation code that should go here.

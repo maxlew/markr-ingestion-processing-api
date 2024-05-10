@@ -45,7 +45,7 @@ class TestResults {
    * @param {TestResult} testResult - Unique identifier for the test.
    * @returns {Promise<TestResult>} - The newly added test result.
    */
-  async addTestResult(testResult) {
+  addTestResult(testResult) {
     const columns = [
       'test_id',
       'scanned_on',
@@ -66,7 +66,7 @@ class TestResults {
    * @param {string[]} keys - Object containing the fields to update.
    * @returns {Promise<TestResult>} - The updated test result.
    */
-  async updateTestResult(testResult, keys) {
+  updateTestResult(testResult, keys) {
     return this.sql`
       UPDATE test_results
       SET ${this.sql(testResult, ...keys)}
