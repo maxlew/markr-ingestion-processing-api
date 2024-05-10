@@ -33,7 +33,7 @@ const testResults = new TestResults(
 
 app.get('/results/:test_id', async (req, res) => {
   try {
-    const results = await testResults.getTestResults(req.params.test_id)
+    const results = await testResults.getTestResults(req.params.test_id);
     res.json(results);
   } catch (err) {
     res.status(500).send("Error " + err);
@@ -65,7 +65,7 @@ app.post('/import', async (req, res) => {
     const response = {
       errors: [],
       success: [],
-    }
+    };
 
     for (const result of results) {
       const testResult = buildTestResult(result);
@@ -77,11 +77,11 @@ app.post('/import', async (req, res) => {
         if (testResult.marks_available > existingEntry.marks_available) {
           await testResults.updateTestResult(testResult, ['marks_obtained', 'marks_available', 'percentage_score']);
           // add re-scan as warning, note updated row though
-          response.errors.push(`Warn: test_id_${testResult.test_id} has already been received for student_${testResult.student_number}, row updated due to more complete data`)
+          response.errors.push(`Warn: test_id_${testResult.test_id} has already been received for student_${testResult.student_number}, row updated due to more complete data`);
           response.success.push(testResult);
         } else {
           // add re-scan to errors array but continue
-          response.errors.push(`Error: test_id_${testResult.test_id} has already been received for student_${testResult.student_number}`)
+          response.errors.push(`Error: test_id_${testResult.test_id} has already been received for student_${testResult.student_number}`);
         }
 
       } else {

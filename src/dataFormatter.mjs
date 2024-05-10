@@ -22,17 +22,17 @@ export const buildTestResult = (result) => {
   }
 
   // Check that the 'answers' actually equal the available score
-  const available = result.answer.length
+  const available = result.answer.length;
   const score = result.answer.reduce((acc, cur) => {
     acc += Number(cur.marks_awarded);
     return acc;
   }, 0);
 
   if (available !== testResult.marks_available) {
-    console.warn('Available does not match', { available, score, testResult })
+    console.warn('Available does not match', { available, score, testResult });
   }
   if (score !== testResult.marks_obtained) {
-    console.warn('Obtained does not match', { available, score, testResult })
+    console.warn('Obtained does not match', { available, score, testResult });
   }
 
   if (missingKeys.length) {

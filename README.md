@@ -51,11 +51,11 @@ Returns a JSON response for all tests with the specified testId. This isn't stri
 ### `GET /results/:test_id/aggregate`
 Returns a JSON response of type `AggregateData` for the test_id required. This information is calculated at request time by postgres.
 
-Depending on the total dataset size this might become a scaling issue, although postgres should handle that for a long while. 
-Someone did say "every school system in Europe & North America" thoigh. 
+Depending on the total dataset size this might become a scaling issue, although postgres should handle that for a long while.
+Someone did say "every school system in Europe & North America" though.
 
 Recommendation is to calculate aggregate data asynchronously after ingestion occurs. Aggregate data would then be stored in it's own table.
-This could be simply after commiting the import txn, make an unawaited HTTP call to itself before returning. Or if we're really scaling use something more eventy like RabbitMQ. 
+This could be simply after commiting the import txn, make an unawaited HTTP call to itself before returning. Or if we're really scaling use something more eventy like RabbitMQ.
 
 ### `POST /import`
 Receives an XML payload from the marking machines, there is currently a 5mb limit on payload size. Unsure if this would become an issue in future a single 20 question test is around 2KB, so in theory this would scale to roughly 2,500 tests per import.
@@ -64,7 +64,7 @@ Returns a JSON object containing a `errors` array and `success` array. Errors ar
 
 
 ## Assumptions
-When the lights go out the postgres database content maintained. I'm not quite sure if AWS deletes the EKS volumes if you don't pay you bills, I assume they just stop the running instances... but at some point surely they kill the whole account. If that happened all the test data would be lost, that would be bad.
+When the lights go out the postgres database contents are maintained. I'm not quite sure if AWS deletes the EKS volumes if you don't pay you bills, I assume they just stop the running instances... but at some point surely they kill the whole account. If that happened all the test data would be lost, that would be bad.
 
 The postgres library is handling SQL injection issues for me. It says so, I trust it, but I didn't explicitly test it. If it doesn't there's a whole lot of validation code that should go here.
 
