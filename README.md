@@ -7,7 +7,7 @@ It's a fairly simple application, a NodeJS Express server with a Postgres databa
 ## Major Data Structures
 ### JS Objects
 ```js
- TestResult type
+ /** JSDoc Types
  @typedef {Object} TestResult
  @param {number} test_id - Unique identifier for the test.
  @param {number} student_number - Unique number of the student.
@@ -64,6 +64,7 @@ When the lights go out the postgres database content maintained. I'm not quite s
 
 The postgres library is handling SQL injection issues for me. It says so, I trust it, but I didn't explicitly test it. If it doesn't there's a whole lot of validation code that should go here.
 
+I didn't use Typescript. This isn't really an assumption more of a statement. Adding a build step to this was more than I really had time for, although it probably would have helped things in retrospect. I did get to play around with using JSDoc as a replacement for Typescript which is a thinking that's been gaining more and more popularity. Now I've done it I don't mind it, for something small like this with a few return types to worry about it works and removes some of the 'weight' of TypeScript.
 
 ## How to run
 This whole app is designed to run inside of docker with docker-compose.
