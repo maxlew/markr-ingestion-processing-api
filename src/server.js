@@ -9,7 +9,6 @@ import { importResults } from './importResults.js';
 const app = express();
 xmlbodyparser(bodyParser);
 
-
 app.use(bodyParser.xml({
   type: 'text/xml+markr',
   limit: '5mb',
@@ -58,7 +57,7 @@ app.post('/import', async (req, res) => {
     }
 
     // ingest results to DB
-    const response = importResults(results);
+    const response = await importResults(results, testResults);
 
     res.json(response);
   } catch (err) {

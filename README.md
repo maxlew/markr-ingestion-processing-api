@@ -62,7 +62,7 @@ Receives an XML payload from the marking machines, processes that data and updat
 
 There is currently a 5mb limit on payload size. Unsure if this would become an issue in future a single 20 question test is around 2KB, so in theory this would scale to roughly 2,500 tests per import. Although many different machines all sending 5mb of data into this service is probably not gonna go well, you'll want to probably deploy it into something that can scale automatically i.e a Lambda or a really well configured K8s instance.
 
-Returns a JSON object containing a `errors` array and `success` array. Errors array contains warnings and errors that occur during ingestion, these are normally duplicate scans. Success returns an array of JSON objects of the tests added to the database.
+Returns a JSON object containing a `warnings`, `updated`, and `added` array. Errors array contains warnings that occur during ingestion, these are normally duplicate scans. Updated and Added returns an array of JSON objects of the tests that were either added or updated in the database.
 
 
 ## Assumptions
@@ -84,7 +84,7 @@ When the lights go out the postgres database contents are maintained. I'm not qu
 
 The postgres library is handling SQL injection issues for me. It says so, I trust it, but I didn't explicitly test it. If it doesn't there's a whole lot of validation code that should go here.
 
-I didn't use Typescript. This isn't really an assumption more of a statement. Adding a build step to this was more than I really had time for, although it probably would have helped things in retrospect. I did get to play around with using JSDoc as a replacement for Typescript which is a thinking that's been gaining more and more popularity. Now I've done it I don't mind it, for something small like this with a few return types to worry about it works and removes some of the 'weight' of TypeScript.
+I didn't use Typescript. This isn't really an assumption more of a statement. Adding a build step to this was more than I really had time for, although it probably would have helped things in retrospect. I did get to play around with using JSDoc as a replacement for Typescript which is a thinking that's been gaining more and more popularity. Now I've done it I don't mind it, for something small a few return types to worry about it works and removes some of the 'weight' of TypeScript. Although when I started refactoring things I noticed that I longed from a bit more structure in my types.
 
 ## How to run
 This whole app is designed to run inside of docker with docker-compose.
@@ -92,13 +92,8 @@ This whole app is designed to run inside of docker with docker-compose.
 You can run the application simply by running `docker-compose up`. Assuming you have docker installed of course.
 
 ### Development
-Because I love pain and hate good DX I didn't make this part very nice. If you make a change you'll need to reboot your `app` container. I spent about 30 seconds trying to get nodemon to work before my patience waned.
+Because I love pain and hate good DX I didn't make this part very nice. If you make a change you'll need to reboot your `app` container. I spent about 30 seconds trying to get nodemon to work before my patience waned. The trick is to hit it twice with `ctrl + c` then press `up arrow`, `enter`, with some muscle memory you'll forget about all that fancy local development.
 
-I just run this whenever I want to test something
-
-```
-docker-compose down && docker-compose build && docker-compose up
-```
 
 ### Testing in Development
 I've used Postman to build and test the whole thing. There's a sample.xml file that can be used as an import payload.
@@ -106,6 +101,6 @@ I've used Postman to build and test the whole thing. There's a sample.xml file t
 Also the docker-compose file is set up to expose port `5432` so if you have a SQL Client you like (TablePlus is my recommended one if you're on a Mac) you can connect to it easily. That's also a good way of checking things are working as expected, I've been burnt before, don't trust a HTTP response, validate the actual data.
 
 ### Automated Testing
-I went a bit crazy with esm modules and Node 22 before learning that Jest doesn't place nice with this yet. So to run Jest requires ensuring the `--experimental-vm-modules` is set. This is done automatically with `npm run test`.
+I went a bit crazy with esm modules and Node 22 before learning that Jest doesn't place nice with this yet. So to run Jest requires ensuring the `--experimental-vm-modules` is set. This is done automatically with `npm run test`, but it also means the nice little `Run | Debug` options in VSCode don't work.
 
-There's not a whole lot of unit testing happening here. I focused on the formatting and validation of the input as that's the area that's most likely to break.
+There's not a whole lot of unit testing happening here. I focused on `dataFormatter.js` which is handling validation of the input as that's the area that's most likely to break. The `importResults.js` file also has a test and that could be much more expansive.

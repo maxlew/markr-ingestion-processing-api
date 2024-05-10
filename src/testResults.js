@@ -76,7 +76,7 @@ class TestResults {
   }
 
   /**
-   * Retrieves a test result from the database by test ID.
+   * Retrieves all test results from the database by test ID.
    * @param {number} test_id - Unique identifier for the test to retrieve.
    * @returns {Promise<Array<TestResult>>} - The requested test result.
    */
@@ -111,7 +111,7 @@ class TestResults {
   }
 
   /**
-   * Retrieves a test result from the database by test ID.
+   * Retrieves a single test result from the database by test ID and Student Number
    * @param {number} test_id - Unique identifier for the test to retrieve.
    * @param {number} student_number - Unique identifier for the students test to retrieve.
    * @returns {Promise<TestResult> | null} - The requested test result.

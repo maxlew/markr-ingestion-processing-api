@@ -1,7 +1,4 @@
-import TestResults from './testResults.js';
 import { buildTestResult, isEntryHigherQuality } from './dataFormatter.js';
-
-const testResults = new TestResults(process.env.DATABASE_URL);
 
 /**
  * Parses results object to do three things
@@ -12,18 +9,23 @@ const testResults = new TestResults(process.env.DATABASE_URL);
  * @param {array} results - The results objects converted from XML to JSON
  * @returns {TestResult[]} - The newly added test result.
  */
-const parseAndValidateResults = (results) => {
-  return results.map(buildTestResult).reduce((acc, result) => {
-    const existingEntry = acc[result.student_number];
+export const parseAndValidateResults = (results) => {
+  const parsedResults = results.map(buildTestResult).reduce((acc, result) => {
+    // Need to ensure we make a string based key here
+    const key = `s_${result.student_number}`;
+    const existingEntry = acc[key];
     if (existingEntry) {
       // Does the new result have a higher score, or higher possible score
-      if (!isEntryHigherQuality(existingEntry, result)) {
+      if (isEntryHigherQuality(existingEntry, result)) {
+        acc[key] = result;
         return acc;
       }
+      return acc;
     }
-    acc[result.student_number] = result;
+    acc[key] = result;
     return acc;
   }, []);
+  return Object.values(parsedResults);
 };
 
 /**
@@ -38,9 +40,10 @@ const parseAndValidateResults = (results) => {
  * @param {array[TestResult]} added - New results added into the database
  *
  * @param {array} results - The results objects converted from XML to JSON
+ * @param {TestResults} TestResult - DB Wrapper for Test Results table
  * @returns {ResponseObject} - The newly added test result.
  */
-export const importResults = async (results) => {
+export const importResults = async (results, testResults) => {
   // Sending back both errors/warnings and successful tests
   const response = {
     warnings: [],
@@ -50,7 +53,7 @@ export const importResults = async (results) => {
 
   const parsedResults = parseAndValidateResults(results);
 
-  for (const testResult of Object.values(parsedResults)) {
+  for (const testResult of parsedResults) {
     // Check if this student already has a result for this test in the DB
     const existingEntry = await testResults.getTestResult(testResult.test_id, testResult.student_number);
     if (existingEntry) {
