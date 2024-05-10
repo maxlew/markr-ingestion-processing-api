@@ -51,7 +51,11 @@ Returns a JSON response for all tests with the specified testId. This isn't stri
 ### `GET /results/:test_id/aggregate`
 Returns a JSON response of type `AggregateData` for the test_id required. This information is calculated at request time by postgres.
 
-Depending on the total dataset size this might become a scaling issue, although postgres should handle that for a long while - someone did say "every school system in Europe & North America". Recommendation is to calculate aggregate data asynchronously after ingestion occurs. Aggregate data would then be stored in it's own table.
+Depending on the total dataset size this might become a scaling issue, although postgres should handle that for a long while. 
+Someone did say "every school system in Europe & North America" thoigh. 
+
+Recommendation is to calculate aggregate data asynchronously after ingestion occurs. Aggregate data would then be stored in it's own table.
+This could be simply after commiting the import txn, make an unawaited HTTP call to itself before returning. Or if we're really scaling use something more eventy like RabbitMQ. 
 
 ### `POST /import`
 Receives an XML payload from the marking machines, there is currently a 5mb limit on payload size. Unsure if this would become an issue in future a single 20 question test is around 2KB, so in theory this would scale to roughly 2,500 tests per import.
