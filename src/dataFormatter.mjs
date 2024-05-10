@@ -1,6 +1,28 @@
+const expectedKeys = [
+  'scanned_on',
+  'first_name',
+  'last_name',
+  'student_number',
+  'test_id',
+  'answer',
+  'summary_marks'
+];
+
 export const buildTestResult = (result) => {
+
+  // Throw a specific error if any fields are missing after building the object
+  const missingKeys = [];
+  for (const key of expectedKeys) {
+    if (!result[key]) {
+      missingKeys.push(key);
+    }
+  }
+  if (missingKeys.length) {
+    throw new Error(`Invalid Test: missing values ${missingKeys.join(',')}`);
+  }
+
+  // Coerce some types and calculate the object to be inserted to the DB
   const testResult = {
-    // Strip leading 0's from test_id and student_ids
     test_id: Number(result.test_id),
     student_number: Number(result.student_number),
     scanned_on: result.scanned_on,
@@ -13,15 +35,8 @@ export const buildTestResult = (result) => {
     ).toFixed(2),
   };
 
-  // Throw a specific error if any fields are missing after building the object
-  const missingKeys = [];
-  for (const key of Object.keys(testResult)) {
-    if (!testResult[key]) {
-      missingKeys.push(key);
-    }
-  }
-
   // Check that the 'answers' actually equal the available score
+  // Spoiler they aren't
   const available = result.answer.length;
   const score = result.answer.reduce((acc, cur) => {
     acc += Number(cur.marks_awarded);
@@ -33,10 +48,6 @@ export const buildTestResult = (result) => {
   }
   if (score !== testResult.marks_obtained) {
     console.warn('Obtained does not match', { available, score, testResult });
-  }
-
-  if (missingKeys.length) {
-    throw new Error(`Invalid Test: missing values ${missingKeys.join(',')}`);
   }
 
   return testResult;

@@ -3,7 +3,7 @@ import bodyParser from 'body-parser';
 import xmlbodyparser from 'body-parser-xml';
 import snakeCase from 'lodash/snakeCase.js';
 
-import TestResults from './testResults.mjs';
+import TestResults from './testResults.js';
 import { buildTestResult } from './dataFormatter.mjs';
 
 const app = express();
@@ -25,10 +25,7 @@ app.use(bodyParser.xml({
 }));
 
 const PORT = process.env.PORT || 3000;
-
-const testResults = new TestResults(
-  process.env.DATABASE_URL || 'postgres://postgres:password@db:5432/mydatabase'
-);
+const testResults = new TestResults(process.env.DATABASE_URL);
 
 
 app.get('/results/:test_id', async (req, res) => {
@@ -100,5 +97,5 @@ app.post('/import', async (req, res) => {
 
 
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`Server running on http://localhost:${PORT} 🚀`);
 });

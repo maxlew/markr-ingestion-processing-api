@@ -34,6 +34,9 @@ class TestResults {
    * @param {string} connectionString - The connection string for the PostgreSQL database.
    */
   constructor(connectionString) {
+    if (!connectionString) {
+      throw new Error('No connection string provided, how do I know what database to connect to!');
+    }
     this.sql = postgres(connectionString);
   }
 

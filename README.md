@@ -58,13 +58,15 @@ Recommendation is to calculate aggregate data asynchronously after ingestion occ
 This could be simply after commiting the import txn, make an unawaited HTTP call to itself before returning. Or if we're really scaling use something more eventy like RabbitMQ.
 
 ### `POST /import`
-Receives an XML payload from the marking machines, there is currently a 5mb limit on payload size. Unsure if this would become an issue in future a single 20 question test is around 2KB, so in theory this would scale to roughly 2,500 tests per import.
+Receives an XML payload from the marking machines, processes that data and updates it in postgres.
+
+There is currently a 5mb limit on payload size. Unsure if this would become an issue in future a single 20 question test is around 2KB, so in theory this would scale to roughly 2,500 tests per import. Although many different machines all sending 5mb of data into this service is probably not gonna go well, you'll want to probably deploy it into something that can scale automatically i.e a Lambda or a really well configured K8s instance.
 
 Returns a JSON object containing a `errors` array and `success` array. Errors array contains warnings and errors that occur during ingestion, these are normally duplicate scans. Success returns an array of JSON objects of the tests added to the database.
 
 
 ## Assumptions
-When the lights go out the postgres database contents are maintained. I'm not quite sure if AWS deletes the EKS volumes if you don't pay you bills, I assume they just stop the running instances... but at some point surely they kill the whole account. If that happened all the test data would be lost, that would be bad.
+When the lights go out the postgres database contents are maintained. I'm not quite sure if AWS deletes the file storage volumes if you don't pay you bills, I assume they just stop the running instances... but at some point surely they kill the whole account. If that happened all the test data would be lost, that would be bad.
 
 The postgres library is handling SQL injection issues for me. It says so, I trust it, but I didn't explicitly test it. If it doesn't there's a whole lot of validation code that should go here.
 
@@ -90,4 +92,6 @@ I've also used Postman to test the whole thing, although curl is also pretty eas
 Also the docker-compose file is set up to expose port `5432` so if you have a SQL Client you like (TablePlus is my recommended one if you're on a Mac) you can connect to it easily. That's also a good way of checking things are working as expected, I've been burnt before, don't trust a HTTP response, validate the actual data.
 
 ### Automated Testing
-I'll write unit tests I promise...
+I went a bit crazy with esm modules and Node 22 before learning that Jest doesn't place nice with this yet. So to run Jest requires ensuring the `--experimental-vm-modules` is set. This is done automatically with `npm run test`.
+
+There's not a whole lot of unit testing happening here. I focused on the formatting and validation of the input as that's the area that's most likely to break.
