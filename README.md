@@ -86,8 +86,8 @@ I just run this whenever I want to test something
 docker-compose down && docker-compose build && docker-compose up
 ```
 
-### Manual Testing
-I've also used Postman to test the whole thing, although curl is also pretty easy to. There's a sample.xml file that can be used as an import payload.
+### Testing in Development
+I've used Postman to build and test the whole thing. There's a sample.xml file that can be used as an import payload.
 
 Also the docker-compose file is set up to expose port `5432` so if you have a SQL Client you like (TablePlus is my recommended one if you're on a Mac) you can connect to it easily. That's also a good way of checking things are working as expected, I've been burnt before, don't trust a HTTP response, validate the actual data.
 
